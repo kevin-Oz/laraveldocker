@@ -1,0 +1,19 @@
+[mysqld]
+pid-file        	= /var/run/mysqld/mysqld.pid
+socket          	= /var/run/mysqld/mysqld.sock
+datadir         	= /var/lib/mysql
+default_authentication_plugin=caching_sha2_password
+sort_buffer_size	= 556M
+max_connections = 100
+max_user_connections = 100
+query_cache_size = 32M
+key_buffer_size = 32M
+max_allowed_packet - 268435456
+table_open_cache = 128
+net_buffer_length = 8K
+read_buffer_size = 456K
+read_rnd_buffer_size = 512K
+innodb_file_per_table = 1
+tmp_table size = 32M
+max_heap_table_size = 32M
+thread_cache_size = 4

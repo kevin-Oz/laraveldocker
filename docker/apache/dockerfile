@@ -1,0 +1,29 @@
+FROM debian:bullseye
+# install packages
+RUN  apt update && apt upgrade -y && \
+ apt-get install ca-certificates apt-transport-https software-properties-common \
+ gnupg gnupg2 wget curl redis redis-server supervisor lsb-release \
+ git curl vim apache2 certbot python3 python3-pip python3-certbot-apache -y
+
+#install php and libraries
+RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list && \
+    wget -qO - https://packages.sury.org/php/apt.gpg | apt-key add - && \
+    apt update && apt upgrade -y && \
+    apt install php8.1 libapache2-mod-php8.1 php8.1-curl php8.1-xml php8.1-mbstring php8.1-mysql -y && \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    chmod +x /usr/local/bin/composer
+
+# installing NodeJS
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -- \
+	&& apt-get install -y nodejs
+RUN  a2enmod rewrite ssl proxy proxy_http proxy_balancer lbmethod_byrequests headers
+COPY ./apacheconf/laravel_vhost.conf /etc/apache2/sites-available/laravel_vhost.conf
+RUN a2ensite laravel_vhost.conf
+
+WORKDIR /var/www/html/
+
+COPY ./laravel_entrypoint.sh /
+RUN chmod +x /laravel_entrypoint.sh
+ENTRYPOINT ["/laravel_entrypoint.sh"]
+EXPOSE 80
+CMD apachectl -D FOREGROUND
