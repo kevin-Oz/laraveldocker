@@ -13,6 +13,8 @@ RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
     chmod +x /usr/local/bin/composer
 
+COPY ./php/php.ini /usr/local/etc/php/php.ini
+
 # installing NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -- \
 	&& apt-get install -y nodejs
